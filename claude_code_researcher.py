@@ -12,7 +12,7 @@ import sys
 import json
 import urllib.request
 from bs4 import BeautifulSoup
-from duckduckgo_search import DDGS
+from ddgs import DDGS
 import anthropic
 
 MODEL = "claude-sonnet-4-6"
