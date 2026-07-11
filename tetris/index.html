@@ -1,4 +1,9 @@
-<title>TETRIS — Moscow, 1984</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tetris</title>
 <style>
   @font-face {
     font-family: "Archivo Black";
@@ -75,105 +80,30 @@
     --focus: #2e86ab;
   }
 
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
     margin: 0;
     padding: 0;
     background: var(--paper);
     color: var(--ink);
     font-family: "Space Mono", ui-monospace, "Courier New", monospace;
+    overscroll-behavior: none;
   }
   body {
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     justify-content: center;
-    padding: clamp(14px, 3vw, 36px);
+    padding: 0;
+    touch-action: manipulation;
   }
 
   .poster {
     width: 100%;
     max-width: 860px;
-    border: 3px solid var(--ink);
     background: var(--paper);
     position: relative;
-    padding: clamp(16px, 2.6vw, 28px);
-  }
-  .poster::before,
-  .poster::after,
-  .reg-tl, .reg-br {
-    content: "";
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    pointer-events: none;
-  }
-  .reg-mark {
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    opacity: 0.55;
-  }
-  .reg-mark::before, .reg-mark::after {
-    content: "";
-    position: absolute;
-    background: var(--ink);
-  }
-  .reg-mark::before { width: 100%; height: 1.5px; top: 50%; left: 0; transform: translateY(-50%); }
-  .reg-mark::after { width: 1.5px; height: 100%; left: 50%; top: 0; transform: translateX(-50%); }
-  .reg-mark.tl { top: 8px; left: 8px; }
-  .reg-mark.tr { top: 8px; right: 8px; }
-  .reg-mark.bl { bottom: 8px; left: 8px; }
-  .reg-mark.br { bottom: 8px; right: 8px; }
-
-  header.masthead {
-    position: relative;
-    overflow: hidden;
-    padding: 28px 6px 22px;
-    margin-bottom: 22px;
-  }
-  .banner {
-    position: absolute;
-    left: -8%;
-    right: -8%;
-    top: 38%;
-    height: 46%;
-    background: var(--red);
-    transform: rotate(-3.2deg);
-    z-index: 0;
-  }
-  .eyebrow {
-    position: relative;
-    z-index: 1;
-    font-size: 12px;
-    letter-spacing: 0.32em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    margin: 0 0 6px 2px;
-  }
-  .eyebrow b { color: var(--red); font-weight: 700; }
-  h1.title {
-    position: relative;
-    z-index: 1;
-    font-family: "Archivo Black", "Arial Black", sans-serif;
-    font-weight: 900;
-    font-size: clamp(48px, 11vw, 96px);
-    line-height: 0.86;
-    letter-spacing: 0.01em;
-    margin: 0 0 4px 0;
-    color: var(--ink);
-    text-wrap: balance;
-  }
-  .title-sub {
-    position: relative;
-    z-index: 1;
-    display: inline-block;
-    margin-top: 10px;
-    font-size: 11px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    background: var(--ink);
-    color: var(--paper);
-    padding: 4px 10px;
+    padding: 0;
   }
 
   .layout {
@@ -183,7 +113,22 @@
     align-items: start;
   }
   @media (max-width: 620px) {
-    .layout { grid-template-columns: 1fr; }
+    .layout { grid-template-columns: 1fr; gap: 10px; }
+    .sidebar { gap: 10px; padding: 0 10px 12px; }
+    .board-frame { width: fit-content; max-width: 100%; margin: 0 auto; }
+    canvas#board { height: calc(100dvh - 26px); }
+    .stat-block {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+    .stat-row { flex-direction: column; align-items: flex-start; gap: 0; padding: 0; }
+    .next-block { display: flex; align-items: center; gap: 12px; }
+    .next-block .next-label { margin-bottom: 0; }
+    footer.colophon span:first-child { display: none; }
+  }
+  @media (hover: none) and (pointer: coarse) {
+    .controls-block { display: none; }
   }
 
   .board-frame {
@@ -193,22 +138,19 @@
     padding: 10px;
     line-height: 0;
   }
-  .board-frame .frame-label {
-    position: absolute;
-    top: -11px;
-    left: 14px;
-    background: var(--paper);
-    padding: 0 8px;
-    font-size: 10px;
-    letter-spacing: 0.28em;
-    color: var(--ink-soft);
-  }
   canvas#board {
     display: block;
-    width: 100%;
-    height: auto;
+    width: auto;
+    height: calc(100vh - 26px);
+    height: calc(100dvh - 26px);
+    max-width: 100%;
+    aspect-ratio: 1 / 2;
     image-rendering: pixelated;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    user-select: none;
   }
+  .board-frame { width: fit-content; }
 
   .overlay {
     position: absolute;
@@ -245,6 +187,7 @@
     display: flex;
     flex-direction: column;
     gap: 14px;
+    padding: 10px 12px 0 0;
   }
   .stat-block {
     border-top: 1.5px solid var(--ink);
@@ -342,20 +285,23 @@
   .touch-btn {
     font-family: "Space Mono", monospace;
     font-weight: 700;
-    font-size: 15px;
+    font-size: 16px;
     background: var(--paper-dim);
     color: var(--ink);
     border: 1.5px solid var(--ink);
-    padding: 12px 0;
+    padding: 14px 0;
+    min-height: 48px;
     cursor: pointer;
     user-select: none;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
   }
   .touch-btn:active { background: var(--red); color: var(--paper); }
   .touch-btn.wide { grid-column: span 2; }
 
   footer.colophon {
-    margin-top: 22px;
-    padding-top: 10px;
+    margin-top: 12px;
+    padding: 10px 12px 12px;
     border-top: 1.5px solid var(--ink);
     display: flex;
     justify-content: space-between;
@@ -378,23 +324,12 @@
     clip: rect(0 0 0 0);
   }
 </style>
+</head>
+<body>
 
 <div class="poster">
-  <span class="reg-mark tl"></span>
-  <span class="reg-mark tr"></span>
-  <span class="reg-mark bl"></span>
-  <span class="reg-mark br"></span>
-
-  <header class="masthead">
-    <div class="banner" aria-hidden="true"></div>
-    <p class="eyebrow">Dorodnicyn computing centre &middot; <b>Moscow, 1984</b> &middot; algorithm by A. Pajitnov</p>
-    <h1 class="title">TETRIS</h1>
-    <span class="title-sub">Falling blocks, rebuilt in the browser</span>
-  </header>
-
   <div class="layout">
     <div class="board-frame">
-      <span class="frame-label">PLAYING FIELD &middot; 10 &times; 20</span>
       <canvas id="board" width="280" height="560" role="img" aria-label="Tetris playing field"></canvas>
       <div class="overlay show" id="overlay">
         <div class="big" id="overlayTitle">TETRIS</div>
@@ -425,7 +360,7 @@
       <div class="next-block">
         <div class="next-label">Next piece</div>
         <div class="next-wrap">
-          <canvas id="next" width="96" height="96"></canvas>
+          <canvas id="next" width="64" height="64"></canvas>
         </div>
       </div>
 
@@ -476,9 +411,10 @@
   canvas.height = ROWS * CELL * dpr;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  var NEXT_CELL = 20;
-  nextCanvas.width = 96 * dpr;
-  nextCanvas.height = 96 * dpr;
+  var NEXT_CELL = 13;
+  var NEXT_SIZE = 64;
+  nextCanvas.width = NEXT_SIZE * dpr;
+  nextCanvas.height = NEXT_SIZE * dpr;
   nextCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   var COLORS = {
@@ -638,6 +574,7 @@
   var clearingRows = [];
   var flashTimer = 0;
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var isTouch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 
   var scoreEl = document.getElementById("score");
   var levelEl = document.getElementById("level");
@@ -646,6 +583,7 @@
   var overlay = document.getElementById("overlay");
   var overlayTitle = document.getElementById("overlayTitle");
   var overlaySub = document.getElementById("overlaySub");
+  if (isTouch) overlaySub.innerHTML = "Tap the board or <span class=\"kbd\">START</span> to begin";
   var statusLine = document.getElementById("statusLine");
   var liveRegion = document.getElementById("liveRegion");
   var startBtn = document.getElementById("startBtn");
@@ -830,7 +768,7 @@
       try { localStorage.setItem("tetris_high_score", String(highScore)); } catch (e) {}
     }
     overlayTitle.textContent = "GAME OVER";
-    overlaySub.innerHTML = "Score " + score + " &middot; Press <span class=\"kbd\">R</span> to restart";
+    overlaySub.innerHTML = "Score " + score + " &middot; " + (isTouch ? "Tap to restart" : "Press <span class=\"kbd\">R</span> to restart");
     overlay.classList.add("show");
     statusLine.textContent = "Game over";
     announce("Game over. Final score " + score);
@@ -910,7 +848,7 @@
     }
 
     nextCtx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--board-bg").trim() || "#17140f";
-    nextCtx.fillRect(0, 0, 96, 96);
+    nextCtx.fillRect(0, 0, NEXT_SIZE, NEXT_SIZE);
     if (next) {
       var ngrid = PIECE_ROTATIONS[next][0];
       var minX = 4, maxX = -1, minY = 4, maxY = -1;
@@ -923,7 +861,7 @@
         }
       }
       var w = (maxX - minX + 1) * NEXT_CELL, h = (maxY - minY + 1) * NEXT_CELL;
-      var offX = (96 - w) / 2, offY = (96 - h) / 2;
+      var offX = (NEXT_SIZE - w) / 2, offY = (NEXT_SIZE - h) / 2;
       for (var py3 = 0; py3 < 4; py3++) {
         for (var px3 = 0; px3 < 4; px3++) {
           if (ngrid[py3][px3]) {
@@ -975,7 +913,7 @@
     pauseBtn.textContent = paused ? "Resume" : "Pause";
     if (paused) {
       overlayTitle.textContent = "PAUSED";
-      overlaySub.innerHTML = "Press <span class=\"kbd\">P</span> to resume";
+      overlaySub.innerHTML = isTouch ? "Tap to resume" : "Press <span class=\"kbd\">P</span> to resume";
       overlay.classList.add("show");
       statusLine.textContent = "Paused";
       sfxPause();
@@ -1017,6 +955,10 @@
     if (gameOver || !started) startGame();
   });
   pauseBtn.addEventListener("click", togglePause);
+  overlay.addEventListener("click", function () {
+    if (!started || gameOver) startGame();
+    else if (paused) togglePause();
+  });
 
   var muteBtn = document.getElementById("muteBtn");
   function updateMuteBtn() { muteBtn.textContent = muted ? "Sound: Off" : "Sound: On"; }
@@ -1028,22 +970,114 @@
     if (!muted) { ensureAudio(); sfxMove(); }
   });
 
+  function touchAction(action) {
+    ensureAudio();
+    if (!started) { startGame(); return; }
+    if (gameOver || paused) return;
+    if (action === "left") { if (tryMove(-1, 0)) sfxMove(); }
+    else if (action === "right") { if (tryMove(1, 0)) sfxMove(); }
+    else if (action === "down") { if (tryMove(0, 1)) { score++; sfxSoftDrop(); } updateStats(); }
+    else if (action === "rotate") { if (tryRotate(1)) sfxRotate(); }
+    else if (action === "drop") { hardDrop(); updateStats(); }
+  }
+
+  var REPEATABLE = { left: true, right: true, down: true };
   document.querySelectorAll(".touch-btn").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      ensureAudio();
-      if (!started) { startGame(); return; }
-      if (gameOver || paused) return;
-      var action = btn.getAttribute("data-action");
-      if (action === "left") { if (tryMove(-1, 0)) sfxMove(); }
-      else if (action === "right") { if (tryMove(1, 0)) sfxMove(); }
-      else if (action === "down") { if (tryMove(0, 1)) { score++; sfxSoftDrop(); } updateStats(); }
-      else if (action === "rotate") { if (tryRotate(1)) sfxRotate(); }
-      else if (action === "drop") { hardDrop(); updateStats(); }
+    var action = btn.getAttribute("data-action");
+    var holdTimer = null, repeatTimer = null;
+    function stopRepeat() {
+      clearTimeout(holdTimer);
+      clearInterval(repeatTimer);
+      holdTimer = repeatTimer = null;
+    }
+    btn.addEventListener("pointerdown", function (e) {
+      e.preventDefault();
+      touchAction(action);
+      if (REPEATABLE[action]) {
+        holdTimer = setTimeout(function () {
+          repeatTimer = setInterval(function () { touchAction(action); }, 60);
+        }, 220);
+      }
+    });
+    ["pointerup", "pointercancel", "pointerleave"].forEach(function (evt) {
+      btn.addEventListener(evt, stopRepeat);
     });
   });
+
+  var boardRect = canvas.getBoundingClientRect();
+  function refreshBoardRect() { boardRect = canvas.getBoundingClientRect(); }
+  window.addEventListener("resize", refreshBoardRect);
+  window.addEventListener("orientationchange", refreshBoardRect);
+
+  function boardCellPx() {
+    if (!boardRect.width || !boardRect.height) refreshBoardRect();
+    return { x: boardRect.width / COLS, y: boardRect.height / ROWS };
+  }
+
+  var swipe = null;
+  canvas.addEventListener("pointerdown", function (e) {
+    if (!started || paused || gameOver || swipe) return;
+    ensureAudio();
+    refreshBoardRect();
+    swipe = {
+      id: e.pointerId,
+      startX: e.clientX, startY: e.clientY,
+      lastX: e.clientX, lastY: e.clientY,
+      startTime: performance.now(),
+      accX: 0, accY: 0
+    };
+    if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+
+  canvas.addEventListener("pointermove", function (e) {
+    if (!swipe || e.pointerId !== swipe.id) return;
+    e.preventDefault();
+    if (!started || paused || gameOver) return;
+    var dx = e.clientX - swipe.lastX;
+    var dy = e.clientY - swipe.lastY;
+    swipe.lastX = e.clientX;
+    swipe.lastY = e.clientY;
+    swipe.accX += dx;
+    swipe.accY += dy;
+
+    var cell = boardCellPx();
+    var stepX = Math.max(cell.x * 0.6, 10);
+    var stepY = Math.max(cell.y * 0.6, 10);
+
+    while (swipe.accX >= stepX) { if (tryMove(1, 0)) sfxMove(); swipe.accX -= stepX; }
+    while (swipe.accX <= -stepX) { if (tryMove(-1, 0)) sfxMove(); swipe.accX += stepX; }
+    while (swipe.accY >= stepY) {
+      if (tryMove(0, 1)) { score++; sfxSoftDrop(); }
+      updateStats();
+      swipe.accY -= stepY;
+    }
+    if (swipe.accY < 0) swipe.accY = 0;
+  });
+
+  function endSwipe(e) {
+    if (!swipe || e.pointerId !== swipe.id) return;
+    var totalDX = e.clientX - swipe.startX;
+    var totalDY = e.clientY - swipe.startY;
+    var elapsed = performance.now() - swipe.startTime;
+    if (started && !paused && !gameOver) {
+      if (Math.abs(totalDX) < 12 && Math.abs(totalDY) < 12 && elapsed < 300) {
+        if (tryRotate(1)) sfxRotate();
+      } else if (elapsed > 0 && totalDY > Math.abs(totalDX) &&
+                 totalDY > boardCellPx().y * 1.5 && (totalDY / elapsed) > 0.9) {
+        hardDrop();
+        updateStats();
+      }
+    }
+    swipe = null;
+  }
+  canvas.addEventListener("pointerup", endSwipe);
+  canvas.addEventListener("pointercancel", function () { swipe = null; });
 
   resetGame();
   render();
   requestAnimationFrame(loop);
 })();
 </script>
+</body>
+</html>
