@@ -35,4 +35,3 @@ npm run lint     # oxlint
 
 - `src/App.jsx` — the whole game (state, canvas rendering, audio, input handling)
 - `src/index.css` — global styles (design tokens, layout, light/dark theme)
-- `legacy-cdn/` — the original no-build single-file version (React + Babel via CDN)
