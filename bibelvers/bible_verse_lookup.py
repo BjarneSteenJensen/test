@@ -33,7 +33,7 @@ REF_PATTERN = re.compile(r"\b((?:[1-3]\s)?[A-Z][a-zA-Z]+)\s(\d{1,3}:\d{1,3}(?:-\
 
 KLOVE_VERSE_SELECTOR = '[aria-label^="Verse:"]'
 KLOVE_REFERENCE_SELECTOR = '[aria-label^="Reference:"]'
-BIBLEGATEWAY_SELECTORS = [".passage-text"]
+BIBLEGATEWAY_SELECTORS = [".passage-text .text-html"]
 
 
 def fetch_klove_verse(page) -> tuple[str, str]:
@@ -73,7 +73,12 @@ def fetch_bph_passage(page, reference: str) -> str:
     for selector in BIBLEGATEWAY_SELECTORS:
         el = page.query_selector(selector)
         if el:
-            return el.inner_text().strip()
+            return el.evaluate(
+                "node => { "
+                "node.querySelectorAll('.full-chap-link').forEach(a => a.remove()); "
+                "return node.innerText; "
+                "}"
+            ).strip()
 
     raise RuntimeError(
         f"Could not find the BPH passage text for '{reference}'. "

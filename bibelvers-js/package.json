@@ -1,0 +1,13 @@
+{
+  "name": "bible-verse-lookup-js",
+  "version": "1.0.0",
+  "description": "JavaScript port of bible_verse_lookup.py — fetches today's K-LOVE Verse of the Day and the BPH Danish translation from BibleGateway",
+  "type": "module",
+  "main": "bible_verse_lookup.js",
+  "scripts": {
+    "start": "node bible_verse_lookup.js"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0"
+  }
+}
