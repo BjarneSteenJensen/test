@@ -1,0 +1,13 @@
+{
+  "name": "bible-chapter-lookup",
+  "version": "1.0.0",
+  "description": "Fetches today's K-LOVE Verse of the Day and displays the whole surrounding chapter in the BPH (Bibelen på hverdagsdansk) Danish translation from BibleGateway",
+  "type": "module",
+  "main": "bible_chapter_lookup.js",
+  "scripts": {
+    "start": "node bible_chapter_lookup.js"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0"
+  }
+}
