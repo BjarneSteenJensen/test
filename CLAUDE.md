@@ -29,7 +29,7 @@ Install into the user's venv (not system Python — Debian externally managed):
 ```bash
 python3 -m venv myenv
 source myenv/bin/activate
-pip install anthropic ddgs beautifulsoup4 lxml
+pip install anthropic ddgs beautifulsoup4 lxml pymongo
 ```
 
 The `venv/` and `my_anthropic_env/` directories are broken (Python version mismatch — created in Claude Code's Python 3.13 environment, not the user's system Python). Use `myenv/` only.
@@ -45,6 +45,10 @@ The `venv/` and `my_anthropic_env/` directories are broken (Python version misma
 - **`SYSTEM_PROMPT`** — instructs the model to always search before answering and cite sources. Contains a hardcoded date — update when needed.
 
 The loop pattern: `create → tool_use? → execute tools → append results → create → ... → end_turn → print`.
+
+## URL archiver
+
+`url_archiver.py links.html [--mongo URI] [--db url_archive] [--language Danish] [--force]` extracts every http(s) `<a href>` from an HTML file, fetches each page, stores the raw HTML in the `pages` collection and a Claude-written summary in the `summaries` collection (both keyed by unique `url`). URLs that already have a summary are skipped unless `--force` is given.
 
 ## Notes
 
