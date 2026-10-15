@@ -16,9 +16,10 @@
  */
 
 import * as cheerio from "cheerio";
+import { pathToFileURL } from "node:url";
 
 const KLOVE_URL = "https://www.klove.com/faith/votd";
-const BIBLEGATEWAY_URL = "https://www.biblegateway.com/passage/?search={ref}&version=BPH";
+export const BIBLEGATEWAY_URL = "https://www.biblegateway.com/passage/?search={ref}&version=BPH";
 const USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
   "(KHTML, like Gecko) Chrome/124.0 Safari/537.36";
@@ -28,9 +29,9 @@ const REF_PATTERN = /\b((?:[1-3]\s)?[A-Z][a-zA-Z]+)\s(\d{1,3}:\d{1,3}(?:-\d{1,3}
 
 const KLOVE_VERSE_SELECTOR = '[aria-label^="Verse:"]';
 const KLOVE_REFERENCE_SELECTOR = '[aria-label^="Reference:"]';
-const BIBLEGATEWAY_SELECTOR = ".passage-text .text-html";
+export const BIBLEGATEWAY_SELECTOR = ".passage-text .text-html";
 
-async function fetchHtml(url) {
+export async function fetchHtml(url) {
   const res = await fetch(url, { headers: { "User-Agent": USER_AGENT } });
   if (!res.ok) {
     throw new Error(`Request to ${url} failed: ${res.status} ${res.statusText}`);
@@ -39,7 +40,7 @@ async function fetchHtml(url) {
 }
 
 /** Return { reference, verseText } from K-LOVE's verse of the day. */
-async function fetchKloveVerse() {
+export async function fetchKloveVerse() {
   const html = await fetchHtml(KLOVE_URL);
   const $ = cheerio.load(html);
 
@@ -72,7 +73,7 @@ async function fetchKloveVerse() {
 }
 
 /** Return the BPH Danish text for the given English reference. */
-async function fetchBphPassage(reference) {
+export async function fetchBphPassage(reference) {
   const encodedRef = encodeURIComponent(reference).replace(/%20/g, "+");
   const url = BIBLEGATEWAY_URL.replace("{ref}", encodedRef);
   const html = await fetchHtml(url);
@@ -80,7 +81,8 @@ async function fetchBphPassage(reference) {
 
   const el = $(BIBLEGATEWAY_SELECTOR).first();
   if (el.length) {
-    el.find(".full-chap-link").remove();
+    el.find(".full-chap-link, .footnotes, .crossrefs, h3, h4").remove();
+    el.find("sup.footnote, sup.crossreference").remove();
     return el.text().trim();
   }
 
@@ -104,4 +106,7 @@ async function main() {
   }
 }
 
-main();
+// Only run when executed directly, so other scripts can import the lookup functions.
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main();
+}

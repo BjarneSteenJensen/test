@@ -25,6 +25,23 @@ node bible_verse_lookup.js
 
 Prints the K-LOVE verse of the day and its BPH Danish translation to stdout.
 
+## Verse trainer
+
+`bible_verse_trainer.js` picks a random BPH verse (every chapter in the
+Bible equally likely) using `fetchBphPassage()` from
+`bible_verse_lookup.js`, and trains you to learn it by heart: round 1 hides
+one word, round 2 hides two, and so on until you type the whole verse from
+memory. Earlier blanks stay hidden; a wrong answer repeats the round.
+
+```bash
+node bible_verse_trainer.js                # random verse
+node bible_verse_trainer.js "John 3:16"    # specific verse
+node bible_verse_trainer.js --step 2       # hide 2 more words per round
+```
+
+Type the missing words in order, separated by spaces (case and punctuation
+are ignored). Type `q` to quit.
+
 ## Notes
 
 - If K-LOVE or BibleGateway change their page layout, scraping will break.

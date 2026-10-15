@@ -5,7 +5,8 @@
   "type": "module",
   "main": "bible_verse_lookup.js",
   "scripts": {
-    "start": "node bible_verse_lookup.js"
+    "start": "node bible_verse_lookup.js",
+    "train": "node bible_verse_trainer.js"
   },
   "dependencies": {
     "cheerio": "^1.0.0"
